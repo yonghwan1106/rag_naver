@@ -33,12 +33,16 @@ def process_results(results):
 # Claude API를 사용한 텍스트 생성 함수
 def generate_text(prompt):
     client = Anthropic(api_key=ANTHROPIC_API_KEY)
-    response = client.completions.create(
-        model="claude-3-sonnet-20240229",
-        max_tokens_to_sample=300,
-        prompt=f"{HUMAN_PROMPT} {prompt} {AI_PROMPT}",
-    )
-    return response.completion
+    try:
+        response = client.completions.create(
+            model="claude-3-sonnet-20240229",
+            max_tokens_to_sample=300,
+            prompt=f"{HUMAN_PROMPT} {prompt} {AI_PROMPT}",
+        )
+        return response.completion
+    except Exception as e:
+        st.error(f"An error occurred: {str(e)}")
+        return None
 
 # RAG 시스템 함수
 def rag_system(query):
@@ -52,8 +56,13 @@ def rag_system(query):
     
     with st.spinner('답변 생성 중...'):
         response = generate_text(prompt)
+        if response is None:
+            st.error("답변을 생성하는 데 문제가 발생했습니다. 나중에 다시 시도해 주세요.")
+            return None
     
     return response
+
+
 
 # Streamlit UI
 st.title('AI 뉴스 어시스턴트')
@@ -62,7 +71,8 @@ user_query = st.text_input('질문을 입력하세요:', '최근 AI 기술의 �
 
 if st.button('답변 받기'):
     answer = rag_system(user_query)
-    st.write(answer)
+    if answer:
+        st.write(answer)
 
 # 소스 표시
 st.sidebar.title('정보')
