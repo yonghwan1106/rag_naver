@@ -35,7 +35,7 @@ def generate_text(prompt):
     client = Anthropic(api_key=ANTHROPIC_API_KEY)
     try:
         response = client.completions.create(
-            model="claude-3-sonnet-20240229",
+            model="claude-3-5-sonnet-20240620",
             max_tokens_to_sample=300,
             prompt=f"{HUMAN_PROMPT} {prompt} {AI_PROMPT}",
         )
