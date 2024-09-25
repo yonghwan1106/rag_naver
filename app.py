@@ -1,7 +1,6 @@
 import streamlit as st
 import requests
-import json
-from anthropic import Anthropic, HUMAN_PROMPT, AI_PROMPT
+from anthropic import Anthropic
 
 # Streamlit secrets에서 API 키 가져오기
 NAVER_CLIENT_ID = st.secrets["NAVER_CLIENT_ID"]
@@ -9,6 +8,7 @@ NAVER_CLIENT_SECRET = st.secrets["NAVER_CLIENT_SECRET"]
 ANTHROPIC_API_KEY = st.secrets["ANTHROPIC_API_KEY"]
 
 # 네이버 뉴스 검색 함수
+@st.cache_data(ttl=3600)
 def search_naver_news(query, display=5):
     url = "https://openapi.naver.com/v1/search/news.json"
     headers = {
@@ -20,31 +20,24 @@ def search_naver_news(query, display=5):
         "display": display,
         "sort": "date"
     }
-    response = requests.get(url, headers=headers, params=params)
-    return response.json()
+    try:
+        response = requests.get(url, headers=headers, params=params)
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as e:
+        st.error(f"네이버 API 요청 중 오류 발생: {str(e)}")
+        return None
 
 # 검색 결과 처리 함수
 def process_results(results):
+    if not results or 'items' not in results:
+        return "검색 결과가 없습니다."
     processed = []
     for item in results['items']:
         processed.append(f"Title: {item['title']}\nDescription: {item['description']}\n")
     return "\n".join(processed)
 
 # Claude API를 사용한 텍스트 생성 함수
-def generate_text(prompt):
-    client = Anthropic(api_key=ANTHROPIC_API_KEY)
-    try:
-        response = client.messages.create(
-            model="claude-3-5-sonnet-20240620",
-            max_tokens_to_sample=300,
-            prompt=f"{HUMAN_PROMPT} {prompt} {AI_PROMPT}",
-        )
-        return response.messages
-    except Exception as e:
-        st.error(f"An error occurred: {str(e)}")
-        return None
-
-# RAG 시스템 함수
 def generate_text(prompt):
     client = Anthropic(api_key=ANTHROPIC_API_KEY)
     try:
@@ -57,12 +50,28 @@ def generate_text(prompt):
         )
         return response.content[0].text
     except Exception as e:
-        st.error(f"An error occurred: {str(e)}")
+        st.error(f"Claude API 오류 발생: {str(e)}")
         return None
+
+# RAG 시스템 함수
+def rag_system(query):
+    with st.spinner('검색 중...'):
+        search_results = search_naver_news(query)
+    
+    if not search_results:
+        return "뉴스 검색 중 오류가 발생했습니다."
+
+    with st.spinner('정보 처리 중...'):
+        processed_results = process_results(search_results)
+    
+    prompt = f"다음 뉴스 정보를 바탕으로 질문에 답해주세요. 답변은 한국어로 작성해 주세요.\n\n질문: {query}\n\n뉴스 정보:\n{processed_results}\n\n답변:"
+    
+    with st.spinner('답변 생성 중...'):
+        response = generate_text(prompt)
+        if response is None:
+            return "답변을 생성하는 데 문제가 발생했습니다. 나중에 다시 시도해 주세요."
     
     return response
-
-
 
 # Streamlit UI
 st.title('AI 뉴스 어시스턴트')
