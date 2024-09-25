@@ -72,7 +72,7 @@ user_query = st.text_input('질문을 입력하세요:', '최근 AI 기술의 �
 if st.button('답변 받기'):
     answer = rag_system(user_query)
     if answer:
-        st.write(answer)
+        st.markdown(answer)
 
 # 소스 표시
 st.sidebar.title('정보')
