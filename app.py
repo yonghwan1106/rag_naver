@@ -34,8 +34,8 @@ def process_results(results):
         return "검색 결과가 없습니다."
     processed = []
     for item in results['items']:
-        processed.append(f"Title: {item['title']}\nDescription: {item['description']}\n")
-    return "\n".join(processed)
+        processed.append(f"제목: {item['title']}\n요약: {item['description']}\n날짜: {item['pubDate']}\n\n")
+    return "".join(processed)
 
 # Claude API를 사용한 텍스트 생성 함수
 def generate_text(prompt):
@@ -64,7 +64,16 @@ def rag_system(query):
     with st.spinner('정보 처리 중...'):
         processed_results = process_results(search_results)
     
-    prompt = f"다음 뉴스 정보를 바탕으로 질문에 답해주세요. 답변은 한국어로 작성해 주세요.\n\n질문: {query}\n\n뉴스 정보:\n{processed_results}\n\n답변:"
+    prompt = f"""다음은 네이버 뉴스 API를 통해 실시간으로 검색된 최신 뉴스 정보입니다. 
+    이 정보를 바탕으로 질문에 답해주세요. 반드시 제공된 최신 뉴스 정보만을 사용하고, 
+    귀하의 기존 지식은 사용하지 마세요.
+    
+    질문: {query}
+    
+    최신 뉴스 정보:
+    {processed_results}
+    
+    위 최신 뉴스 정보만을 사용하여 답변해주세요:"""
     
     with st.spinner('답변 생성 중...'):
         response = generate_text(prompt)
