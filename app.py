@@ -34,12 +34,12 @@ def process_results(results):
 def generate_text(prompt):
     client = Anthropic(api_key=ANTHROPIC_API_KEY)
     try:
-        response = client.completions.create(
+        response = client.messages.create(
             model="claude-3-5-sonnet-20240620",
             max_tokens_to_sample=300,
             prompt=f"{HUMAN_PROMPT} {prompt} {AI_PROMPT}",
         )
-        return response.completion
+        return response.messages
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
         return None
