@@ -29,6 +29,7 @@ def naver_search(query):
 # Together.ai API 연동
 def together_ai_model(prompt):
     url = "https://api.together.xyz/inference"
+    prompt: "<s>[INST] What is the capital of France? [/INST]",
     headers = {
         "Authorization": f"Bearer {together_ai_api_key}",
         "Content-Type": "application/json"
