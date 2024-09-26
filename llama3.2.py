@@ -1,5 +1,6 @@
 import requests
 import json
+import streamlit as st
 
 # 네이버 API 연동
 def naver_search(query):
@@ -46,3 +47,14 @@ def rag(query):
     processed_data = process_data(data)
     response = generate_response(processed_data)
     return response
+
+# 스트림릿 클라우드 배포
+def main():
+    st.title("RAG 애플리케이션")
+    query = st.text_input("질문 입력")
+    if st.button("검색"):
+        response = rag(query)
+        st.write(response)
+
+if __name__ == "__main__":
+    main()
