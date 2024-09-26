@@ -2,11 +2,15 @@ import requests
 import json
 import streamlit as st
 
+# <secrets>에 저장된 키를 사용합니다.
+naver_api_key = st.secrets["NAVER_API_KEY"]
+together_ai_api_key = st.secrets["TOGETHER_AI_API_KEY"]
+
 # 네이버 API 연동
 def naver_search(query):
     url = "https://openapi.naver.com/v1/search/news.json"
     headers = {
-        "X-Naver-Client-Id": "YOUR_CLIENT_ID",
+        "X-Naver-Client-Id": naver_api_key,
         "X-Naver-Client-Secret": "YOUR_CLIENT_SECRET"
     }
     params = {
@@ -16,12 +20,11 @@ def naver_search(query):
     response = requests.get(url, headers=headers, params=params)
     return response.json()
 
-# LLaMA 3.2 90B Instruct 연동
-def llama_model(query):
-    api_key = "YOUR_API_KEY"
+# Together.ai API 연동
+def together_ai_model(query):
     url = "https://api.together.ai/v1/models/llama-3.2-90b-instruct"
     headers = {
-        "Authorization": f"Bearer {api_key}"
+        "Authorization": f"Bearer {together_ai_api_key}"
     }
     data = {
         "input": query
