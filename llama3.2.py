@@ -77,7 +77,7 @@ def main():
             if news_data and 'items' in news_data:
                 st.subheader("네이버 검색 결과")
                 for item in news_data['items']:
-                    st.write(f"**{item['title']}**")
+                    st.markdown(f"[**{item['title']}**]({item['link']})")
                     st.write(item['description'])
                     st.write("---")
             else:
