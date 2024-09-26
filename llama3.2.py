@@ -16,7 +16,7 @@ def naver_search(query):
     }
     params = {
         "query": query,
-        "display": 10
+        "display": 5  # 결과 수를 5개로 제한
     }
     try:
         response = requests.get(url, headers=headers, params=params)
@@ -66,12 +66,36 @@ def rag(query):
 
 # 스트림릿 클라우드 배포
 def main():
-    st.title("RAG 애플리케이션")
-    query = st.text_input("질문 입력")
+    st.title("뉴스 검색 및 요약 애플리케이션")
+    
+    query = st.text_input("검색어를 입력하세요")
+    
     if st.button("검색"):
-        with st.spinner("응답을 생성 중입니다..."):
-            response = rag(query)
-            st.write(response)
+        # 네이버 검색 결과
+        with st.spinner("네이버 검색 중..."):
+            news_data = naver_search(query)
+            if news_data and 'items' in news_data:
+                st.subheader("네이버 검색 결과")
+                for item in news_data['items']:
+                    st.write(f"**{item['title']}**")
+                    st.write(item['description'])
+                    st.write("---")
+            else:
+                st.warning("검색 결과가 없습니다.")
+        
+        # LLM 요약 결과
+        if news_data and 'items' in news_data:
+            with st.spinner("LLM이 요약을 생성 중입니다..."):
+                news_text = "\n".join([f"{item['title']}: {item['description']}" for item in news_data['items']])
+                prompt = f"다음은 '{query}'에 대한 뉴스 검색 결과입니다:\n\n{news_text}\n\n이 정보를 바탕으로 '{query}'에 대해 간단히 요약해주세요."
+                
+                llm_response = together_ai_model(prompt)
+                if llm_response:
+                    st.subheader("LLM 요약 결과")
+                    st.write(llm_response)
+                else:
+                    st.warning("LLM 요약을 생성하는데 실패했습니다.")
 
 if __name__ == "__main__":
     main()
+ 
