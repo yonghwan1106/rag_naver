@@ -1,7 +1,7 @@
-streamlit==1.10.0
-requests==2.28.1
-json==2.0.9
-transformers==4.21.3
+streamlit
+requests
+json
+transformers
 
 #streamlit: 스트림릿 클라우드에서 애플리케이션을 개발하고 배포하는 데 필요한 라이브러리입니다.
 #requests: 네이버 API와 LLaMA 3.2 90B Instruct를 호출하는 데 필요한 라이브러리입니다.
