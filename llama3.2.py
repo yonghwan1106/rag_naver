@@ -34,7 +34,7 @@ def together_ai_model(prompt):
         "Content-Type": "application/json"
     }
     data = {
-        "model": "llama-3.2-90b-instruct",
+        "model": "meta-llama/Llama-Vision-Free",
         "messages": [{"role": "user", "content": prompt}],
         "max_tokens": 500
     }
