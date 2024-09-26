@@ -1,6 +1,5 @@
 streamlit
 requests
-json
 transformers
 
 #streamlit: 스트림릿 클라우드에서 애플리케이션을 개발하고 배포하는 데 필요한 라이브러리입니다.
