@@ -52,10 +52,10 @@ def validate_and_summarize(query, news_data):
 
     # 최신성 검증
     current_date = datetime.now()
-    recent_news = [item for item in news_data['items'] if (current_date - datetime.strptime(item['pubDate'], "%a, %d %b %Y %H:%M:%S +0900")).days <= 7]
+    recent_news = [item for item in news_data['items'] if (current_date - datetime.strptime(item['pubDate'], "%a, %d %b %Y %H:%M:%S +0900")).days <= 300]
 
     if not recent_news:
-        return "최근 7일 이내의 관련 뉴스가 없습니다."
+        return "최근 300일 이내의 관련 뉴스가 없습니다."
 
     # 뉴스 내용 요약
     news_text = "\n".join([f"{item['title']}: {item['description']}" for item in recent_news])
