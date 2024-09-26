@@ -3,15 +3,16 @@ import json
 import streamlit as st
 
 # <secrets>에 저장된 키를 사용합니다.
-naver_api_key = st.secrets["NAVER_API_KEY"]
+naver_client_id = st.secrets["NAVER_CLIENT_ID"]
+naver_client_secret = st.secrets["NAVER_CLIENT_SECRET"]
 together_ai_api_key = st.secrets["TOGETHER_AI_API_KEY"]
 
 # 네이버 API 연동
 def naver_search(query):
     url = "https://openapi.naver.com/v1/search/news.json"
     headers = {
-        "X-Naver-Client-Id": naver_api_key,
-        "X-Naver-Client-Secret": "YOUR_CLIENT_SECRET"
+        "X-Naver-Client-Id": naver_client_id,
+        "X-Naver-Client-Secret": naver_client_secret
     }
     params = {
         "query": query,
